@@ -118,21 +118,32 @@ def visualize(x,colormap,name):
 
     Args:
         C: Matrix of C values computed for a given layer.
+		i: Layer index.
 
     Returns:
-        Ci: Numpy array of indices of most relevant nodes.
+        Ci: Numpy array of indices of least relevant nodes.
+		Ni: Numpy array of indices of most relevant nodes.
     """
 def noderel(C, i):
 	threshold = (max(C[0]) + min(C[0])) / 2
-	Ci = pandas.DataFrame(numpy.argwhere(C >= threshold), columns=['N', 'NodeIndex'])
-	Ci.to_csv('./results/nodeRel' + str(i) + '.csv', index=False)
+	Ci = numpy.argwhere(C < threshold)
+	Ni = numpy.where(C >= threshold)[1]
+	Ni = pandas.DataFrame(numpy.argwhere(C >= threshold), columns=['Instance', 'NodeIndex'])
+	Ni.to_csv('./results/nodeRel' + str(i) + '.csv', index=False)
+	return Ci
 	
 # -------------------------
 # Probability score
 # -------------------------
+"""
+    Prints the probability score for each output versus input.
 
+    Args:
+        Y: Matrix of predicted values.
+    """
 def probability(Y):
 	for l in range(len(Y)): 
 		print("============== Instance " + str(l) + " ==============")
 		for i, o in enumerate(Y[l]): 
-			print("Digit: %d with probability %.2f. " % (i, o))
+			print("Label: %d with probability %.2f. " % (i, o))
+		print("\n")

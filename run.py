@@ -14,7 +14,7 @@ Neural Network Layer-wise Relevance Propagation
 
 
 if __name__ == '__main__':
-    X, T = utils.getMNISTsample(N = 5, path = './data/', seed = 99)
+    X, T = utils.getMNISTsample(N = 2, path = './data/', seed = 99)
     utils.visualize(X, utils.graymap, './results/data.png')
     
     nn = lrp.Network([
@@ -22,7 +22,7 @@ if __name__ == '__main__':
         lrp.NextLinear('./parameters/l2'), lrp.ReLU(),
         lrp.NextLinear('./parameters/l3'), lrp.ReLU(),])
 
-    print("Neural Network initialized with size:", len(nn.layers))
+    print("Neural Network initialized with size:%d\n" % len(nn.layers))
 
     Y = nn.forward(X)
     utils.probability(Y)

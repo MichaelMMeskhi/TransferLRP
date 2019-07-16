@@ -63,7 +63,7 @@ class NextLinear(architecture.Linear):
         Z = numpy.dot(self.X, V) + 1e-9
         S = R/Z
         C = numpy.dot(S, V.T)
-        utils.noderel(C,i) # Finds most relevant nodes in a layer
+        Ci = utils.noderel(C,i) # Finds most relevant nodes in a layer
         R = self.X*C
         return R
 
