@@ -1,10 +1,10 @@
-from utils import utils
 import numpy
+from utils import utils
 from architecture import architecture
 
 """ 
 Extends the architecture.py module to introduce layer-wise 
-relevance propagation. Computes the Deep Taylor Decomposition
+relevance propagation for neural networks. Computes the Deep Taylor Decomposition
 using the relprop() function extenstion for each class (relevance propagation). 
 """
 
@@ -63,7 +63,7 @@ class NextLinear(architecture.Linear):
         Z = numpy.dot(self.X, V) + 1e-9
         S = R/Z
         C = numpy.dot(S, V.T)
-        Ci = utils.noderel(C,i) # Finds most relevant nodes in a layer
+        Ci = utils.noderel(C,i, net='nn') # Finds least relevant nodes in a layer
         R = self.X*C
         return R
 

@@ -53,7 +53,7 @@ class Linear:
 			self.B = numpy.loadtxt(name+'-B.txt')
 
 	def forward(self,X):
-		self.X = X 
+		self.X = X
 		return numpy.dot(self.X,self.W)+self.B
 
 	def gradprop(self,DY):
@@ -82,7 +82,7 @@ class Pooling:
 class Convolution:
 
 	def __init__(self,name):
-		wshape = map(int,list(name.split("-")[-1].split("x")))
+		wshape = tuple(map(int,list(name.split("-")[-1].split("x"))))
 		self.W = numpy.loadtxt(name+'-W.txt').reshape(wshape)
 		self.B = numpy.loadtxt(name+'-B.txt')
 

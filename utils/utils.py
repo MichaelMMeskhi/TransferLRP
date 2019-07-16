@@ -124,12 +124,12 @@ def visualize(x,colormap,name):
         Ci: Numpy array of indices of least relevant nodes.
 		Ni: Numpy array of indices of most relevant nodes.
     """
-def noderel(C, i):
+def noderel(C, i, net):
 	threshold = (max(C[0]) + min(C[0])) / 2
 	Ci = numpy.argwhere(C < threshold)
-	Ni = numpy.where(C >= threshold)[1]
-	Ni = pandas.DataFrame(numpy.argwhere(C >= threshold), columns=['Instance', 'NodeIndex'])
-	Ni.to_csv('./results/nodeRel' + str(i) + '.csv', index=False)
+	# Ni = numpy.argwhere(C >= threshold)
+	# Ni = pandas.DataFrame(numpy.argwhere(C >= threshold), columns=['Instance', 'NodeIndex'])
+	# Ni.to_csv('./results/' + net + '_nodeRel' + str(i) + '.csv', index=False)
 	return Ci
 	
 # -------------------------
