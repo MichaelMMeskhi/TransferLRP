@@ -133,6 +133,6 @@ def noderel(C, i):
 
 def probability(Y):
 	for l in range(len(Y)): 
+		print("============== Instance " + str(l) + " ==============")
 		for i, o in enumerate(Y[l]): 
-			print("Digit: %d with %.2f probability." % (i, o))
-		print("=======================================")
+			print("Digit: %d with probability %.2f. " % (i, o))
