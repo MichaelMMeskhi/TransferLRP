@@ -98,7 +98,6 @@ class Convolution:
 		for i in range(ww):
 			for j in range(hw):
 				Y += numpy.dot(X[:,i:i+wy,j:j+hy,:],self.W[i,j,:,:])
-
 		return Y+self.B
 
 	def gradprop(self,DY):
@@ -112,6 +111,4 @@ class Convolution:
 		for i in range(ww):
 			for j in range(hw):
 				DX[:,i:i+wy,j:j+hy,:] += numpy.dot(DY,self.W[i,j,:,:].T)
-
 		return DX
-

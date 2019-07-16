@@ -21,7 +21,7 @@ class Network(architecture.Network):
         R: Outputs final R value of all layers (relevance).
     """
     def relprop(self,R):
-        for l in self.layers[::-1]: R = l.relprop(R)
+        for i, l in enumerate(self.layers[::-1]): R = l.relprop(R, i)
         return R
       
 class ReLU(architecture.ReLU):
@@ -36,7 +36,7 @@ class ReLU(architecture.ReLU):
     Returns:
         R: Output of that ReLU layer (relevance).
     """
-    def relprop(self,R): return R
+    def relprop(self,R,i): return R
     
 class NextLinear(architecture.Linear):
     """
@@ -51,7 +51,7 @@ class NextLinear(architecture.Linear):
     Returns:
         R: Output of that Linear layer (relevance).
     """
-    def relprop(self,R):
+    def relprop(self,R,i):
         """
         Relevance is computed at R = self.X*C 
         self.X is the number of neurons in a given layer at iteration.
@@ -63,7 +63,7 @@ class NextLinear(architecture.Linear):
         Z = numpy.dot(self.X, V) + 1e-9
         S = R/Z
         C = numpy.dot(S, V.T)
-        utils.noderel(C) # Finds most relevant nodes in a layer
+        utils.noderel(C,i) # Finds most relevant nodes in a layer
         R = self.X*C
         return R
 
@@ -79,11 +79,10 @@ class FirstLinear(architecture.Linear):
     Returns:
         R: Output of that FirstLinear layer (relevance).
     """
-    def relprop(self,R):
+    def relprop(self,R,i):
         W,V,U = self.W,numpy.maximum(0,self.W),numpy.minimum(0,self.W)
         X,L,H = self.X,self.X*0+utils.lowest,self.X*0+utils.highest
 
         Z = numpy.dot(X,W)-numpy.dot(L,V)-numpy.dot(H,U)+1e-9; S = R/Z
         R = X*numpy.dot(S,W.T)-L*numpy.dot(S,V.T)-H*numpy.dot(S,U.T)
         return R
-

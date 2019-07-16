@@ -21,8 +21,13 @@ if __name__ == '__main__':
         lrp.FirstLinear('./parameters/l1'),lrp.ReLU(),
         lrp.NextLinear('./parameters/l2'), lrp.ReLU(),
         lrp.NextLinear('./parameters/l3'), lrp.ReLU(),])
-    
+
+    print("Neural Network initialized with size:", len(nn.layers))
+    print("=======================================")
+
     Y = nn.forward(X)
+    utils.probability(Y)
     D = nn.relprop(Y*T)
     utils.visualize(D, utils.heatmap, './results/mlp-deeptaylor.png')
+    print("=======================================")
     print("Experiment complete!")

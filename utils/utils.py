@@ -122,8 +122,14 @@ def visualize(x,colormap,name):
     Returns:
         Ci: Numpy array of indices of most relevant nodes.
     """
-def noderel(C):
+def noderel(C, i):
 	threshold = (max(C[0]) + min(C[0])) / 2
 	Ci = pandas.DataFrame(numpy.argwhere(C >= threshold), columns=['N', 'NodeIndex'])
-	Ci.to_csv('./results/nodeRel.csv', index=False)
+	Ci.to_csv('./results/nodeRel' + str(i) + '.csv', index=False)
+	
+# -------------------------
+# Probability score
+# -------------------------
 
+def probability(Y):
+	for i, o in enumerate(Y.flatten()): print("Digit: %d with %.2f probability." % (i, o))
