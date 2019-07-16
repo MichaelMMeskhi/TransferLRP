@@ -14,7 +14,7 @@ Neural Network Layer-wise Relevance Propagation
 
 
 if __name__ == '__main__':
-    X, T = utils.getMNISTsample(N = 1, path = './data/', seed = 99)
+    X, T = utils.getMNISTsample(N = 5, path = './data/', seed = 99)
     utils.visualize(X, utils.graymap, './results/data.png')
     
     nn = lrp.Network([
@@ -29,5 +29,4 @@ if __name__ == '__main__':
     utils.probability(Y)
     D = nn.relprop(Y*T)
     utils.visualize(D, utils.heatmap, './results/mlp-deeptaylor.png')
-    print("=======================================")
     print("Experiment complete!")
