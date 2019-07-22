@@ -18,22 +18,22 @@ if __name__ == '__main__':
     * No. of Hidden Layers: 2
     * No. of Samples (N): 1
     """
-    # X, T = utils.getMNISTsample(N = 1, path = './data/', seed = 99)
-    # utils.visualize(X, utils.graymap, './results/data.png')
+    X, T = utils.getMNISTsample(N = 1, path = './data/', seed = 99)
+    utils.visualize(X, utils.graymap, './results/instances.png')
     
-    # nn = nn_lrp.Network([
-    #     nn_lrp.FirstLinear('./parameters/nn/l1'),nn_lrp.ReLU(),
-    #     nn_lrp.NextLinear('./parameters/nn/l2'),nn_lrp.ReLU(),
-    #     nn_lrp.NextLinear('./parameters/nn/l3'),nn_lrp.ReLU(),
-    #     ])
+    nn = nn_lrp.Network([
+        nn_lrp.FirstLinear('./parameters/nn/l1'),nn_lrp.ReLU(),
+        nn_lrp.NextLinear('./parameters/nn/l2'),nn_lrp.ReLU(),
+        nn_lrp.NextLinear('./parameters/nn/l3'),nn_lrp.ReLU(),
+        ])
 
-    # print("Neural Network initialized with size:%d\n" % len(nn.layers))
+    print("Neural Network initialized with size: %d\n" % len(nn.layers))
     
-    # Y = nn.forward(X)
-    # utils.probability(Y)
-    # D = nn.relprop(Y*T)
-    # utils.visualize(D, utils.heatmap, './results/mlp-deeptaylor.png')
-    # print("\nExperiment complete!")
+    Y = nn.forward(X)
+    utils.probability(Y)
+    D = nn.relprop(Y*T)
+    utils.visualize(D, utils.heatmap, './results/nn/nn-deeptaylor.png')
+    print("\nExperiment complete!")
 
     """
     Convolutional Neural Network Layer-wise Relevance Propagation
@@ -42,11 +42,11 @@ if __name__ == '__main__':
     * No. of Hidden Layers: 5
     * No. of Samples (N): 1
     """
-    X,T = utils.getMNISTsample(N = 12, path = './data', seed = 99)
+    X,T = utils.getMNISTsample(N = 1, path = './data', seed = 99)
     
     padding = ((0,0),(2,2),(2,2),(0,0))
-    X = numpy.pad(X.reshape([12,28,28,1]),padding,'constant',constant_values=(utils.lowest,))
-    T = T.reshape([12,1,1,10])
+    X = numpy.pad(X.reshape([1,28,28,1]),padding,'constant',constant_values=(utils.lowest,))
+    T = T.reshape([1,1,1,10])
     
     cnn = cnn_lrp.Network([
             cnn_lrp.FirstConvolution('./parameters/cnn/c1-5x5x1x10'),cnn_lrp.ReLU(),cnn_lrp.Pooling(),
@@ -55,6 +55,9 @@ if __name__ == '__main__':
             cnn_lrp.NextConvolutionAlphaBeta('./parameters/cnn/c4-1x1x100x10', 2.0),cnn_lrp.ReLU(),
         ])
 
+    print("Neural Network initialized with size: %d\n" % len(cnn.layers))
+
     Y = cnn.forward(X)
     D = cnn.relprop(Y*T)
-    utils.visualize(D[:,2:-2,2:-2],utils.heatmap,'./results/cnn-deeptaylor.png')
+    utils.visualize(D[:,2:-2,2:-2],utils.heatmap,'./results/cnn/cnn-deeptaylor.png')
+    print("\nExperiment complete!")

@@ -1,3 +1,4 @@
+import math
 import copy
 import numpy
 from utils import utils
@@ -23,7 +24,7 @@ class Network(architecture.Network):
         R: Outputs final R value of all layers (relevance).
     """
     def relprop(self,R):
-        for l in self.layers[::-1]: R = l.relprop(R)
+        for i, l in enumerate(self.layers[::-1]): R = l.relprop(R)
         return R
 
 class ReLU(architecture.ReLU):
@@ -60,7 +61,7 @@ class NextConvolution(architecture.Convolution):
         Z = pself.forward(self.X)+1e-9;
         S = R/Z
         C = pself.gradprop(S); 
-        #Ci = utils.noderel(C,i=0, net='cnn') # Finds least relevant nodes in a layer        
+        utils.noderel(C,i,net='cnn') # Finds least relevant nodes in a layer
         R = self.X*C
         return R
 
@@ -103,7 +104,7 @@ class Pooling(architecture.Pooling):
     def relprop(self,R):
         Z = (self.forward(self.X)+1e-9);
         S = R / Z
-        C = self.gradprop(S)            
+        C = self.gradprop(S)  
         R = self.X*C
         return R        
 
