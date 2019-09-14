@@ -12,18 +12,17 @@
 # -------------------------------
 # Modules for the neural network
 # -------------------------------
-import numpy as np
 class Module:
     '''
     Superclass for all computation layer implementations
     '''
+
     def __init__(self):
         ''' The constructor '''
 
         #values for presetting lrp decomposition parameters per layer
         self.lrp_var = None
         self.lrp_param = 1.
-        count = 0
 
     def backward(self,DY):
         ''' backward passes the error gradient DY to the input neurons '''
@@ -65,8 +64,7 @@ class Module:
         self.lrp_var = lrp_var
         self.lrp_param = param
 
-    def lrp(self,R, lrp_var=None,param=None, reset=0):
-
+    def lrp(self,R, lrp_var=None,param=None):
         '''
         Performs LRP by calling subroutines, depending on lrp_var and param or
         preset values specified via Module.set_lrp_parameters(lrp_var,lrp_param)
@@ -119,33 +117,6 @@ class Module:
         R : the backward-propagated relevance scores.
             shaped identically to the previously processed inputs in <Module>.forward
         '''
-        # print(self.W[0][0])
-        if(reset != 0 and self.W[0][0] == 0.027585652502580577):
-            # print("Here is, lrp")
-            threshold1 = np.partition(R[0], 1100)[1100]
-            indices1 = np.where(R[0] >= threshold1)
-            print(indices1)
-            # print("Length of ind1", len(indices1[0]))
-            newW = []
-            for lst in self.W:
-                newW.append(np.mean(lst))
-
-            threshold2 = np.partition(newW, 1100)[1100]
-            # print('threshold2', threshold2)
-            print(newW)
-            indices2 = np.where(newW >= threshold2)
-            print(indices2)
-            # print("Length of ind2", len(indices2[0]))
-            commonIndices = np.intersect1d(indices1, indices2)
-            # print("common Indices", commonIndices)
-            avg = np.mean(R[0])
-            if reset == 1:
-                R[0] = [0] * len(R[0])
-                R[0][commonIndices] = avg
-            elif reset == 2:
-                R[0] = [avg] * len(R[0])
-            else:
-                print("Invalid argument, reset can only have values as 0, 1 or 2")
 
         if lrp_var is None and param is None:
             # module.lrp(R) has been called without further parameters.
