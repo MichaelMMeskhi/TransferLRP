@@ -300,7 +300,7 @@ class Sequential(Module):
         for m in self.modules:
             m.set_lrp_parameters(lrp_var=lrp_var,param=param)
 
-    def lrp(self,R,lrp_var=None,param=None):
+    def lrp(self,R,lrp_var=None,param=None, reset=0):
         '''
         Performs LRP by calling subroutines, depending on lrp_var and param or
         preset values specified via Module.set_lrp_parameters(lrp_var,lrp_param)
@@ -362,5 +362,5 @@ class Sequential(Module):
         '''
 
         for m in self.modules[::-1]:
-            R = m.lrp(R,lrp_var,param)
+            R = m.lrp(R,lrp_var,param, reset)
         return R

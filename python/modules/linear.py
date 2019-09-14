@@ -48,7 +48,6 @@ class Linear(Module):
         self.W = np.random.normal(0,1.0*m**(-.5),[self.m,self.n])
         self.trainable = True
 
-
     def to_cupy(self):
         global np
         assert imp.find_spec("cupy"), "module cupy not found."

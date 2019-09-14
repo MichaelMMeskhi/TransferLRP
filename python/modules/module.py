@@ -12,17 +12,18 @@
 # -------------------------------
 # Modules for the neural network
 # -------------------------------
+import numpy as np
 class Module:
     '''
     Superclass for all computation layer implementations
     '''
-
     def __init__(self):
         ''' The constructor '''
 
         #values for presetting lrp decomposition parameters per layer
         self.lrp_var = None
         self.lrp_param = 1.
+        count = 0
 
     def backward(self,DY):
         ''' backward passes the error gradient DY to the input neurons '''
@@ -64,7 +65,8 @@ class Module:
         self.lrp_var = lrp_var
         self.lrp_param = param
 
-    def lrp(self,R, lrp_var=None,param=None):
+    def lrp(self,R, lrp_var=None,param=None, reset=0):
+
         '''
         Performs LRP by calling subroutines, depending on lrp_var and param or
         preset values specified via Module.set_lrp_parameters(lrp_var,lrp_param)
@@ -117,6 +119,48 @@ class Module:
         R : the backward-propagated relevance scores.
             shaped identically to the previously processed inputs in <Module>.forward
         '''
+        # print(self.W[0][0])
+        if(reset != 0 and self.W[0][0] == 0.027585652502580577):
+            # print("Here is, lrp")
+            newW = []
+            for lst in self.W:
+                newW.append(np.mean(lst))
+
+            tp_R = 30
+            tp_A = 30
+            # threshold_R = max(R[0]) - ( (max(R[0])-min(R[0])) * tp_R/100 )
+            # threshold_A = max(newW) - ( (max(newW)-min(newW)) * tp_A/100 )
+            threshold_R = np.partition(R[0], 1100)[1100]
+            threshold_A = np.partition(newW, 1100)[1100]
+            print("threshold R", threshold_R)
+            print("threshold A", threshold_A)
+
+            top_RN = np.where(R[0] >= threshold_R)
+
+            top_AN = np.where(newW >= threshold_A)
+
+            S = np.intersect1d(top_RN, top_AN)
+            print("S", S)
+            # print("common Indices", commonIndices)
+            sum_R = sum(R[0])
+            # print(sum_R)
+            if reset == 1:
+                new_R = [0] * len(R[0])
+                sum_S = sum(R[0][S])
+                for index in S:
+                    # print("here")
+                    # print((R[0][index]/sum_S) * sum_R)
+                    new_R[index] = (R[0][index]/sum_S) * sum_R
+                    # print(index, new_R[index])
+                # print(new_R)
+                R[0] = np.array(new_R)
+            elif reset == 2:
+                new_R = [0] * len(R[0])
+                for index in S:
+                    new_R[index] = sum_R/len(S)
+                R[0] = np.array(new_R)
+            else:
+                print("Invalid argument, reset can only have values as 0, 1 or 2")
 
         if lrp_var is None and param is None:
             # module.lrp(R) has been called without further parameters.

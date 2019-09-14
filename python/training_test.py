@@ -52,32 +52,35 @@ if train_mnist:
     # Xtrain_full = data_io.read('../data/MNIST/train_images.npy')
     # Ytrain_full = data_io.read('../data/MNIST/train_labels.npy')
 
-    # Xtrain = []
-    # Ytrain = []
-    # for i in range(len(Ytrain_full)):
-    #     if Ytrain_full[i] in [[0], [1], [2], [3], [4]]:
-    #         Ytrain.append(Ytrain_full[i])
-    #         Xtrain.append(Xtrain_full[i])
+    # # Xtrain = []
+    # # Ytrain = []
+    # # for i in range(len(Ytrain_full)):
+    # #     if Ytrain_full[i] in [[0], [1], [2], [3], [4]]:
+    # #         Ytrain.append(Ytrain_full[i])
+    # #         Xtrain.append(Xtrain_full[i])
 
-    # Xtrain = np.array(Xtrain)
-    # Ytrain = np.array(Ytrain)  
+    # # Xtrain = np.array(Xtrain)
+    # # Ytrain = np.array(Ytrain)  
     # # print(Xtrain[0:10]) 
     # # print(Ytrain[0:10])
-
+    # Xtrain = Xtrain_full
+    # Ytrain = Ytrain_full
 
     # Xtest_full = data_io.read('../data/MNIST/test_images.npy')
     # Ytest_full = data_io.read('../data/MNIST/test_labels.npy')
 
-    # Xtest = []
-    # Ytest = []
+    # # Xtest = []
+    # # Ytest = []
 
-    # for i in range(len(Ytest_full)):
-    #     if Ytest_full[i] in [[0], [1], [2], [3], [4]]:
-    #         Ytest.append(Ytest_full[i])
-    #         Xtest.append(Xtest_full[i])
+    # # for i in range(len(Ytest_full)):
+    # #     if Ytest_full[i] in [[0], [1], [2], [3], [4]]:
+    # #         Ytest.append(Ytest_full[i])
+    # #         Xtest.append(Xtest_full[i])
 
-    # Xtest = np.array(Xtest)
-    # Ytest = np.array(Ytest)
+    # # Xtest = np.array(Xtest)
+    # # Ytest = np.array(Ytest)
+    # Xtest = Xtest_full
+    # Ytest = Ytest_full
 
     # print("Sise of training data set ", len(Ytrain))
     # print("Sise of testing data set ", len(Ytest))
@@ -108,28 +111,28 @@ if train_mnist:
     #         modules.Rect(),
     #         modules.Linear(1296,1296),
     #         modules.Rect(),
-    #         modules.Linear(1296, 5),
+    #         modules.Linear(1296, 10),
     #         modules.SoftMax()
     #     ]
     # )
 
     
-    # nn.train(Xtrain, Ytrain, Xtest, Ytest, batchsize=64, iters=10000, status=500)
+    # nn.train(Xtrain, Ytrain, Xtest, Ytest, batchsize=64, iters=20000, status=1000)
     # acc = np.mean(np.argmax(nn.forward(Xtest), axis=1) == np.argmax(Ytest, axis=1))
     # if not np == numpy: # np=cupy
     #     acc = np.asnumpy(acc)
     # print('model test accuracy is: {:0.4f}'.format(acc))
-    # model_io.write(nn, '../mnist_mlp-Base.txt')
+    # model_io.write(nn, '../mnist_mlp-full.txt')
 
     # #try loading the model again and compute score, see if this checks out. this time in numpy
-    # nn = model_io.read('../mnist_mlp-Base.txt')
+    # nn = model_io.read('../mnist_mlp-full.txt')
     # acc = np.mean(np.argmax(nn.forward(Xtest), axis=1) == np.argmax(Ytest, axis=1))
     # if not np == numpy: acc = np.asnumpy(acc)
     # print('model test accuracy (numpy) is: {:0.4f}'.format(acc))
 
 
 
-    # ---------------------- Getting weights from pretrained model  ----------------
+    # # ---------------------- Getting weights from pretrained model  ----------------
 
     base_nn = model_io.read('../mnist_mlp-Base.txt')
     # transferWeights = base_nn.modules[1].W
@@ -200,29 +203,36 @@ if train_mnist:
             modules.Rect(),
             modules.Linear(1296,1296),
             modules.Rect(),
+            modules.Linear(1296,1296),
+            modules.Rect(),
+            modules.Linear(1296,1296),
+            modules.Rect(),
             modules.Linear(1296, 5),
             modules.SoftMax()
         ]
     )
 
     # ---------------- Initialize weights from base model ------------------
-    for i in range(len(nn.modules)):
-        nn.modules[i].W = base_nn.modules[i].W
+    nn.modules[1].W = base_nn.modules[1].W
+    nn.modules[3].W = base_nn.modules[3].W
+    nn.modules[5].W = base_nn.modules[5].W
+    nn.modules[7].W = base_nn.modules[7].W
 
     # ----------------- Freeze first 4 layers of new network ---------------
-    for i in range(4):
-        nn.modules[i].trainable = False
-
+    nn.modules[1].trainable = False
+    nn.modules[3].trainable = False
+    nn.modules[5].trainable = False
+    nn.modules[7].trainable = False
     
-    nn.train(Xtrain, Ytrain, Xtest, Ytest, batchsize=64, iters=1000, status=1000)
+    nn.train(Xtrain, Ytrain, Xtest, Ytest, batchsize=64, iters=10000, status=1000)
     acc = np.mean(np.argmax(nn.forward(Xtest), axis=1) == np.argmax(Ytest, axis=1))
     if not np == numpy: # np=cupy
         acc = np.asnumpy(acc)
     print('model test accuracy is: {:0.4f}'.format(acc))
-    model_io.write(nn, '../mnist_mlp-Target.txt')
+    model_io.write(nn, '../mnist_mlp-DeepTarget.txt')
 
     #try loading the model again and compute score, see if this checks out. this time in numpy
-    nn = model_io.read('../mnist_mlp-Target.txt')
+    nn = model_io.read('../mnist_mlp-DeepTarget.txt')
     acc = np.mean(np.argmax(nn.forward(Xtest), axis=1) == np.argmax(Ytest, axis=1))
     if not np == numpy: acc = np.asnumpy(acc)
     print('model test accuracy (numpy) is: {:0.4f}'.format(acc))
