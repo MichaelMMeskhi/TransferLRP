@@ -10,7 +10,7 @@ if imp.find_spec("cupy"): #use cupy for GPU support if available
     import cupy as np
 na = np.newaxis
 
-base_nn = model_io.read('../mnist_mlp-Base.txt')
+base_nn = model_io.read('../mnist_mlp-full.txt')
 # transferWeights = base_nn.modules[1].W
 # print(transferWeights)
 
@@ -51,31 +51,35 @@ nn = modules.Sequential(
         modules.Rect(),
         modules.Linear(1296,1296),
         modules.Rect(),
+        modules.Linear(1296,1296),
+        modules.Rect(),
+        modules.Linear(1296,1296),
+        modules.Rect(),
         modules.Linear(1296, 40),
         modules.SoftMax()
     ]
 )
 
 # ---------------- Initialize weights from base model ------------------
-for i in range(2, len(nn.modules)-2):
+for i in range(0, 8):
 	if i%2 != 0:
 	    nn.modules[i].W = base_nn.modules[i].W
 
 # ----------------- Freeze first 4 layers of new network ---------------
-for i in range(1, 8):
+for i in range(0, 8):
 	if i%2 != 0:
 	    nn.modules[i].trainable = False
 
 
-nn.train(Xtrain, Ytrain, Xtest, Ytest, batchsize=64, iters=1000, status=1000)
+nn.train(Xtrain, Ytrain, Xtest, Ytest, batchsize=64, iters=20000, status=20000)
 acc = np.mean(np.argmax(nn.forward(Xtest), axis=1) == np.argmax(Ytest, axis=1))
 if not np == numpy: # np=cupy
     acc = np.asnumpy(acc)
 print('model test accuracy is: {:0.4f}'.format(acc))
-model_io.write(nn, '../omniglot_mlp-Target.txt')
+model_io.write(nn, '../omniglot_mlp-Target_full.txt')
 
 #try loading the model again and compute score, see if this checks out. this time in numpy
-nn = model_io.read('../omniglot_mlp-Target.txt')
+nn = model_io.read('../omniglot_mlp-Target_full.txt')
 acc = np.mean(np.argmax(nn.forward(Xtest), axis=1) == np.argmax(Ytest, axis=1))
 if not np == numpy: acc = np.asnumpy(acc)
 print('model test accuracy (numpy) is: {:0.4f}'.format(acc))

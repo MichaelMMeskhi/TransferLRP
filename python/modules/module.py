@@ -65,7 +65,7 @@ class Module:
         self.lrp_var = lrp_var
         self.lrp_param = param
 
-    def lrp(self,R, lrp_var=None,param=None, reset=0):
+    def lrp(self,R, lrp_var=None,param=None, reset=0, t_A = 15, t_R=15):
 
         '''
         Performs LRP by calling subroutines, depending on lrp_var and param or
@@ -130,17 +130,19 @@ class Module:
             tp_A = 30
             # threshold_R = max(R[0]) - ( (max(R[0])-min(R[0])) * tp_R/100 )
             # threshold_A = max(newW) - ( (max(newW)-min(newW)) * tp_A/100 )
-            threshold_R = np.partition(R[0], 1100)[1100]
-            threshold_A = np.partition(newW, 1100)[1100]
-            print("threshold R", threshold_R)
-            print("threshold A", threshold_A)
+            target_R = int(len(self.W) - len(self.W)*t_R/100)
+            target_A = int(len(self.W) - len(self.W)*t_A/100)
+            threshold_R = np.partition(R[0], target_R)[target_R]
+            threshold_A = np.partition(newW, target_A)[target_A]
+            # print("threshold R", threshold_R)
+            # print("threshold A", threshold_A)
 
             top_RN = np.where(R[0] >= threshold_R)
 
             top_AN = np.where(newW >= threshold_A)
 
             S = np.intersect1d(top_RN, top_AN)
-            print("S", S)
+            # print("S", S)
             # print("common Indices", commonIndices)
             sum_R = sum(R[0])
             # print(sum_R)
