@@ -161,6 +161,10 @@ class Module:
                 for index in S:
                     new_R[index] = sum_R/len(S)
                 R[0] = np.array(new_R)
+            elif reset == 3:
+                new_R = [0] * len(R[0])
+                for index in S:
+                    new_R[index] = R[0][index] 
             else:
                 print("Invalid argument, reset can only have values as 0, 1 or 2")
 
