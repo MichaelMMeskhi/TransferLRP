@@ -218,21 +218,26 @@ if train_mnist:
     nn.modules[5].W = base_nn.modules[5].W
     nn.modules[7].W = base_nn.modules[7].W
 
+    nn.modules[1].B = base_nn.modules[1].B
+    nn.modules[3].B = base_nn.modules[3].B
+    nn.modules[5].B = base_nn.modules[5].B
+    nn.modules[7].B = base_nn.modules[7].B
+
     # ----------------- Freeze first 4 layers of new network ---------------
     nn.modules[1].trainable = False
     nn.modules[3].trainable = False
     nn.modules[5].trainable = False
     nn.modules[7].trainable = False
     
-    nn.train(Xtrain, Ytrain, Xtest, Ytest, batchsize=64, iters=10000, status=1000)
+    nn.train(Xtrain, Ytrain, Xtest, Ytest, batchsize=64, iters=15000, status=1000)
     acc = np.mean(np.argmax(nn.forward(Xtest), axis=1) == np.argmax(Ytest, axis=1))
     if not np == numpy: # np=cupy
         acc = np.asnumpy(acc)
     print('model test accuracy is: {:0.4f}'.format(acc))
-    model_io.write(nn, '../mnist_mlp-DeepTarget.txt')
+    model_io.write(nn, '../mnist_mlp-DeepTarget_new.txt')
 
     #try loading the model again and compute score, see if this checks out. this time in numpy
-    nn = model_io.read('../mnist_mlp-DeepTarget.txt')
+    nn = model_io.read('../mnist_mlp-DeepTarget_new.txt')
     acc = np.mean(np.argmax(nn.forward(Xtest), axis=1) == np.argmax(Ytest, axis=1))
     if not np == numpy: acc = np.asnumpy(acc)
     print('model test accuracy (numpy) is: {:0.4f}'.format(acc))
