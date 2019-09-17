@@ -169,6 +169,7 @@ class Module:
                 new_R = [0] * len(R[0])
                 for index in S:
                     new_R[index] = R[0][index] 
+                R[0] = np.array(new_R)
             else:
                 print("Invalid argument, reset can only have values as 0, 1 or 2")
 
