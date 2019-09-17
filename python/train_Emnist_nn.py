@@ -136,7 +136,7 @@ if train_mnist:
 
     # # ---------------------- Getting weights from pretrained model  ----------------
 
-    base_nn = model_io.read('../mnist_mlp-full.txt')
+    # base_nn = model_io.read('../mnist_mlp-full.txt')
     # transferWeights = base_nn.modules[1].W
     # print(transferWeights)
 
@@ -184,41 +184,21 @@ if train_mnist:
             modules.Rect(),
             modules.Linear(1296,1296),
             modules.Rect(),
-            modules.Linear(1296,1296),
-            modules.Rect(),
-            modules.Linear(1296,1296),
-            modules.Rect(),
             modules.Linear(1296, 26),
             modules.SoftMax()
         ]
     )
 
-    # ---------------- Initialize weights from base model ------------------
-    nn.modules[1].W = base_nn.modules[1].W
-    nn.modules[3].W = base_nn.modules[3].W
-    nn.modules[5].W = base_nn.modules[5].W
-    nn.modules[7].W = base_nn.modules[7].W
-    nn.modules[1].B = base_nn.modules[1].B
-    nn.modules[3].B = base_nn.modules[3].B
-    nn.modules[5].B = base_nn.modules[5].B
-    nn.modules[7].B = base_nn.modules[7].B
-
-    # ----------------- Freeze first 4 layers of new network ---------------
-    nn.modules[1].trainable = False
-    nn.modules[3].trainable = False
-    nn.modules[5].trainable = False
-    nn.modules[7].trainable = False
-    nn.modules[7].name = "ff"
     
     nn.train(Xtrain, Ytrain, Xtest, Ytest, batchsize=64, iters=12000, status=1000)
     acc = np.mean(np.argmax(nn.forward(Xtest), axis=1) == np.argmax(Ytest, axis=1))
     if not np == numpy: # np=cupy
         acc = np.asnumpy(acc)
     print('model test accuracy is: {:0.4f}'.format(acc))
-    model_io.write(nn, '../mnist_to_letters_2.0.txt')
+    model_io.write(nn, '../Emnist_nn.txt')
 
     #try loading the model again and compute score, see if this checks out. this time in numpy
-    nn = model_io.read('../mnist_to_letters_2.0.txt')
+    nn = model_io.read('../Emnist_nn.txt')
     acc = np.mean(np.argmax(nn.forward(Xtest), axis=1) == np.argmax(Ytest, axis=1))
     if not np == numpy: acc = np.asnumpy(acc)
     print('model test accuracy (numpy) is: {:0.4f}'.format(acc))

@@ -25,7 +25,7 @@ na = np.newaxis
 
 class Convolution(Module):
 
-    def __init__(self, filtersize=(5,5,3,32), stride = (2,2)):
+    def __init__(self, filtersize=(5,5,3,32), stride = (2,2), name="None"):
         '''
         Constructor for a Convolution layer.
 
@@ -51,6 +51,8 @@ class Convolution(Module):
 
         self.W = np.random.normal(0,1./(self.fh*self.fw*self.fd)**.5, filtersize)
         self.B = np.zeros([self.n])
+        self.trainable = True
+        self.name = name
 
     def to_cupy(self):
         global np
@@ -174,26 +176,28 @@ class Convolution(Module):
 
 
     def update(self,lrate):
-        N,Hx,Wx,Dx = self.X.shape
-        N,Hy,Wy,NF = self.DY.shape
 
-        hf,wf,df,NF = self.W.shape
-        hstride, wstride = self.stride
+        if self.trainable:
+            N,Hx,Wx,Dx = self.X.shape
+            N,Hy,Wy,NF = self.DY.shape
 
-        DW = np.zeros_like(self.W,dtype=np.float)
+            hf,wf,df,NF = self.W.shape
+            hstride, wstride = self.stride
 
-        if not (hf == wf and self.stride == (1,1)):
-            for i in range(Hy):
-                for j in range(Wy):
-                    DW += (self.X[:, i*hstride:i*hstride+hf , j*wstride:j*wstride+wf , :, na] * self.DY[:,i:i+1,j:j+1,na,:]).sum(axis=0)
-        else:
-            for i in range(hf):
-                for j in range(wf):
-                    DW[i,j,:,:] = np.tensordot(self.X[:,i:i+Hy:hstride,j:j+Wy:wstride,:],self.DY,axes=([0,1,2],[0,1,2]))
+            DW = np.zeros_like(self.W,dtype=np.float)
 
-        DB = self.DY.sum(axis=(0,1,2))
-        self.W -= lrate * DW / (hf*wf*df*Hy*Wy)**.5
-        self.B -= lrate * DB / (Hy*Wy)**.5
+            if not (hf == wf and self.stride == (1,1)):
+                for i in range(Hy):
+                    for j in range(Wy):
+                        DW += (self.X[:, i*hstride:i*hstride+hf , j*wstride:j*wstride+wf , :, na] * self.DY[:,i:i+1,j:j+1,na,:]).sum(axis=0)
+            else:
+                for i in range(hf):
+                    for j in range(wf):
+                        DW[i,j,:,:] = np.tensordot(self.X[:,i:i+Hy:hstride,j:j+Wy:wstride,:],self.DY,axes=([0,1,2],[0,1,2]))
+
+            DB = self.DY.sum(axis=(0,1,2))
+            self.W -= lrate * DW / (hf*wf*df*Hy*Wy)**.5
+            self.B -= lrate * DB / (Hy*Wy)**.5
 
 
     def clean(self):

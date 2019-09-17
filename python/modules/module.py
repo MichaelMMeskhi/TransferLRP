@@ -65,7 +65,7 @@ class Module:
         self.lrp_var = lrp_var
         self.lrp_param = param
 
-    def lrp(self,R, lrp_var=None,param=None, reset=0, t_A = 15, t_R=15):
+    def lrp(self,R, lrp_var=None,param=None, reset=0, t_A = 15, t_R=15, net="part"):
 
         '''
         Performs LRP by calling subroutines, depending on lrp_var and param or
@@ -120,7 +120,11 @@ class Module:
             shaped identically to the previously processed inputs in <Module>.forward
         '''
         # print(self.W[0][0])
-        if(reset != 0 and self.W[0][0] == 0.027585652502580577):
+        if net == 'full':
+            wt = -0.00017673444062546892
+        else:
+            wt = 0.027585652502580577
+        if(reset != 0 and self.W[0][0] == wt):
             # print("Here is, lrp")
             newW = []
             for lst in self.W:
