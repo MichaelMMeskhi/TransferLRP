@@ -120,11 +120,12 @@ class Module:
             shaped identically to the previously processed inputs in <Module>.forward
         '''
         # print(self.W[0][0])
-        if net == 'full':
-            wt = -0.00017673444062546892
-        else:
-            wt = 0.027585652502580577
-        if(reset != 0 and self.W[0][0] == wt):
+        # if net == 'full':
+        #     wt = -0.00017673444062546892
+        # else:
+        #     wt = 0.027585652502580577
+        # print(self.name)
+        if(reset != 0 and self.name == 'lbf'):
             # print("Here is, lrp")
             newW = []
             for lst in self.W:
