@@ -47,7 +47,7 @@ I = Ytest[:,0].astype(int)
 Ytest = np.zeros([Xtest.shape[0],np.unique(Ytest).size])
 Ytest[np.arange(Ytest.shape[0]),I] = 1
 
-if False:
+if True:
     #model a network according to LeNet-5 architecture
     lenet = modules.Sequential([
                                 modules.Convolution(filtersize=(5,5,1,10),stride = (1,1)),\

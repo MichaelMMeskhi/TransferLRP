@@ -26,7 +26,7 @@ class Linear(Module):
     Linear Layer
     '''
 
-    def __init__(self,m,n,name="None"):
+    def __init__(self,m,n):
         '''
         Initiates an instance of a linear computation layer.
 
@@ -47,7 +47,7 @@ class Linear(Module):
         self.B = np.zeros([self.n])
         self.W = np.random.normal(0,1.0*m**(-.5),[self.m,self.n])
         self.trainable = True
-        self.name = name
+
     def to_cupy(self):
         global np
         assert imp.find_spec("cupy"), "module cupy not found."

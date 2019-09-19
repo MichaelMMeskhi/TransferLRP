@@ -23,7 +23,7 @@ na = np.newaxis
 # -------------------------------
 
 class MaxPool(Module):
-    def __init__(self,pool=(2,2),stride=(2,2), name="None"):
+    def __init__(self,pool=(2,2),stride=(2,2)):
         '''
         Constructor for the max pooling layer object
 
@@ -41,7 +41,6 @@ class MaxPool(Module):
 
         self.pool = pool
         self.stride = stride
-        self.name = name
 
     def to_cupy(self):
         global np

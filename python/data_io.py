@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 '''
 @author: Sebastian Lapuschkin
 @maintainer: Sebastian Lapuschkin
