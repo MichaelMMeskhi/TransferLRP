@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 '''
 @author: Sebastian Lapuschkin
 @maintainer: Sebastian Lapuschkin
@@ -379,6 +377,90 @@ def alex_black_yellow(R):
     RGB[positives,1] = R[positives]/maxabs
 
     return RGB
+
+
+
+
+
+def hm_to_rgb_2(R, X = None, scaling = 3, shape = (), sigma = 2, cmap = 'jet', normalize = True):
+    '''
+    Takes as input an intensity array and produces a rgb image for the represented heatmap.
+    optionally draws the outline of another input on top of it.
+
+    Parameters
+    ----------
+
+    R : numpy.ndarray
+        the heatmap to be visualized, shaped [M x N]
+
+    X : numpy.ndarray
+        optional. some input, usually the data point for which the heatmap R is for, which shall serve
+        as a template for a black outline to be drawn on top of the image
+        shaped [M x N]
+
+    scaling: int
+        factor, on how to enlarge the heatmap (to control resolution and as a inverse way to control outline thickness)
+        after reshaping it using shape.
+
+    shape: tuple or list, length = 2
+        optional. if not given, X is reshaped to be square.
+
+    sigma : double
+        optional. sigma-parameter for the canny algorithm used for edge detection. the found edges are drawn as outlines.
+
+    cmap : str
+        optional. color map of choice
+
+    normalize : bool
+        optional. whether to normalize the heatmap to [-1 1] prior to colorization or not.
+
+    Returns
+    -------
+
+    rgbimg : numpy.ndarray
+        three-dimensional array of shape [scaling*H x scaling*W x 3] , where H*W == M*N
+    '''
+
+    R = enlarge_image(vec2im(R,shape), scaling)
+
+    if cmap in custom_maps:
+        rgb =  custom_maps[cmap](R)
+    else:
+        if normalize:
+            R = R / np.max(np.abs(R)) # normalize to [-1,1] wrt to max relevance magnitude
+            R = (R + 1.)/2. # shift/normalize to [0,1] for color mapping
+
+        #create color map object from name string
+        cmap = eval('matplotlib.cm.{}'.format(cmap))
+
+        # apply colormap
+        rgb = cmap(R.flatten())[...,0:3].reshape([R.shape[0],R.shape[1],3])
+    #rgb = repaint_corner_pixels(rgb, scaling) #obsolete due to directly calling the color map with [0,1]-normalized inputs
+
+    if not X is None: #compute the outline of the input
+        X = enlarge_image(vec2im(X,shape), scaling)
+        xdims = X.shape
+        Rdims = R.shape
+
+        if not np.all(xdims == Rdims):
+            print('transformed heatmap and data dimension mismatch. data dimensions differ?')
+            print('R.shape = ',Rdims, 'X.shape = ', xdims)
+            print('skipping drawing of outline\n')
+        else:
+            edges = canny(X, sigma=sigma)
+            edges = np.invert(np.dstack([edges]*3))*1.0
+            rgb *= edges # set outline pixels to black color
+    return rgb
+
+
+
+
+
+
+
+
+
+
 
 
 #list of supported color map names. the maps need to be implemented ABOVE this line because of PYTHON

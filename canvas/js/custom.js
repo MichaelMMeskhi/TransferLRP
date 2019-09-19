@@ -15,7 +15,6 @@ $("#clear-canvas").click(function(){
   canvas.clear(); 
   canvas.backgroundColor = "#ffffff";
   canvas.renderAll();
-  updateChart(zeros);
   $("#status").removeClass();
   $('#lrp-results').hide();
 });
@@ -24,6 +23,19 @@ $("#clear-canvas").click(function(){
 // Predict button callback
 $("#predict").click(function(){  
 
+  var modelList = document.getElementById("model");
+  var model = modelList.options[modelList.selectedIndex].value;
+
+  var lrpType = document.getElementById("lrptype");
+  var lrp = lrpType.options[lrpType.selectedIndex].value;
+
+  var methodType = document.getElementById("method");
+  var method = methodType.options[methodType.selectedIndex].value;
+
+  var methodThreshold = document.getElementById("methodthreshold").value;
+
+  var overlapThreshold = document.getElementById("overlapthreshold").value;
+
   // Change status indicator
   $("#status").removeClass().toggleClass("fa fa-spinner fa-spin");
 
@@ -31,14 +43,13 @@ $("#predict").click(function(){
   var fac = (1.) / 13.; 
   var url = canvas.toDataURLWithMultiplier('png', fac);
 
+  var param = "?mdl"+model+"lrp"+lrp+"mtd"+method+"mth"+methodThreshold+"oth"+overlapThreshold
   // Post url to python script
-  var jq = $.post('cgi-bin/mnist.py', url)
+  var jq = $.post('cgi-bin/mnist.py', url+param)
     .done(function (json) {
       if (json.result) {
         var labels = ['A', 'B', 'C', 'D', 'E']
         $("#status").removeClass().toggleClass("fa fa-check");
-        $('#svg-chart').show();
-        updateChart(json.data, labels);
         updatelrpresults();
         $('#lrp-results').show();
       } else {
@@ -58,69 +69,3 @@ $("#predict").click(function(){
 function updatelrpresults() {
   $("#lrpimg").prop("src", "/images/lrpresult.png?" + new Date().valueOf());
 }  
-
-// Iniitialize d3 bar chart
-$('#svg-chart').show();
-var zeros = [0,0,0,0,0]
-var labels = ['A', 'B', 'C', 'D', 'E']
-
-var margin = {top: 20, right: 20, bottom: 20, left: 20},
-    width = 360 - margin.left - margin.right,
-    height = 180 - margin.top - margin.bottom;
-
-var x = d3.scale.linear()
-    .range([0, width]);
-
-var y = d3.scale.ordinal()
-    .rangeRoundBands([0, height], 0.1);
-
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
-
-var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
-    .tickSize(0)
-    .tickPadding(6);
-
-var svg = d3.select("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  x.domain([-5, 5]);
-  y.domain(labels);
-
-  svg.selectAll(".bar")
-      .data(zeros)
-    .enter().append("rect")
-      .attr("class", function(d) { return "bar bar--" + (d < 0 ? "negative" : "positive"); })
-      .attr("x", function(d) { return x(Math.min(0, d)); })
-      .attr("y", function(d) { return y(d); })
-      .attr("width", function(d) { return (x(d) - x(0)); })
-      .attr("height", y.rangeBand());
-
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
-
-  svg.append("g")
-      .attr("class", "y axis")
-      .attr("transform", "translate(" + x(0) + ",0)")
-      .call(yAxis);
-
-// Update chart data
-function updateChart(data, labels) {
-  full = {"data": [data], "labels": [labels]}
-  svg.selectAll(".bar")
-      .data(full)
-    .enter().append("rect")
-      .attr("class", function(d) { return "bar bar--" + (d < 0 ? "negative" : "positive"); })
-      .attr("x", function(d) { return x(Math.min(0, d.data)); })
-      .attr("y", function(d) { return y(d.labels); })
-      .attr("width", function(d) { return Math.abs(x(d.data) - x(0)); })
-      .attr("height", y.rangeBand());
-}

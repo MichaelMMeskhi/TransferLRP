@@ -74,7 +74,7 @@ class Sequential(Module):
 
 
 
-    def forward(self,X,lrp_aware=False):
+    def forward(self,X,lrp_aware=False, lbfBreak=False):
         '''
         Realizes the forward pass of an input through the net
 
@@ -94,9 +94,16 @@ class Sequential(Module):
         X : numpy.ndarray
             the output of the network's final layer
         '''
-
-        for m in self.modules:
+        count = 0
+        for m in self.modules: 
             X = m.forward(X,lrp_aware=lrp_aware)
+            try:
+                if m.name == 'lbf' and lbfBreak==True:
+                    print("Breaking forward at layer - ", count)
+                    break
+            except:
+                pass
+            count += 1
         return X
 
 
@@ -300,7 +307,7 @@ class Sequential(Module):
         for m in self.modules:
             m.set_lrp_parameters(lrp_var=lrp_var,param=param)
 
-    def lrp(self,R,lrp_var=None,param=None, reset=0, t_A=15, t_R=15):
+    def lrp(self,R,lrp_var=None,param=None, reset=0, t_A=15, t_R=15, net="nn", act=[0]):
         '''
         Performs LRP by calling subroutines, depending on lrp_var and param or
         preset values specified via Module.set_lrp_parameters(lrp_var,lrp_param)
@@ -362,5 +369,5 @@ class Sequential(Module):
         '''
 
         for m in self.modules[::-1]:
-            R = m.lrp(R,lrp_var,param, reset, t_A, t_R)
+            R = m.lrp(R,lrp_var,param, reset, t_A, t_R, net, act)
         return R
