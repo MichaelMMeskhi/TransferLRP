@@ -1,0 +1,67 @@
+body {
+	margin-top: 100px;
+}
+
+#canvas {
+	border: 1px solid #aaaaaa;
+}
+
+#canvas-div {
+	margin-bottom: 20px;
+}
+
+#header {
+	margin-top: 0px;
+}
+
+#svg-chart {
+	margin-top: 15px;
+}
+
+.bar { 
+	fill: steelblue; 
+}
+
+.bar:hover {
+    fill: yellow ;
+}
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.container {
+	position: fixed;
+    bottom: 35px;
+    width: 100%;
+}
+
+.results-container {
+    top: 35px;
+    width: 800px;
+    margin: 0 auto;
+}
+
+.results-container h2{
+    width: 800px;
+    margin: 0 auto;
+}
+#lrp-results {
+  display: flex;
+  justify-content: center;
+}
+
+#lrp-results img{
+	padding-top: 50px;
+}
