@@ -65,7 +65,7 @@ class Module:
         self.lrp_var = lrp_var
         self.lrp_param = param
 
-    def lrp(self, R, lrp_var=None,param=None, reset=0, t_A=15, t_R=15, net="part", act=[0]):
+    def lrp(self, R, lrp_var=None,param=None, reset=0, t_A=15, t_R=15, net="nn", act=[0]):
 
         '''
         Performs LRP by calling subroutines, depending on lrp_var and param or
@@ -127,48 +127,97 @@ class Module:
         # print(self.name)
         try: 
             if(reset != 0 and self.name == 'lbf'):
-                print("Here is, lrp")
+                # print("Here is, lrp")
+                # print("R", R[0].shape)
 
-                # threshold_R = max(R[0]) - ( (max(R[0])-min(R[0])) * tp_R/100 )
-                # threshold_A = max(newW) - ( (max(newW)-min(newW)) * tp_A/100 )
-                target_R = int(len(self.W) - len(self.W)*t_R/100) #used length of W to get number of neurons
-                target_A = int(len(self.W) - len(self.W)*t_A/100)
-                threshold_R = np.partition(R[0], target_R)[target_R]
-                threshold_A = np.partition(act, target_A)[target_A]
-                # print("threshold R", threshold_R)
-                # print("threshold A", threshold_A)
+                if net == "cnn":
+                    # print(R[0])
+                    shape = R[0].shape
+                    length = 1
+                    for s in shape:
+                        length = length * s
+                    newR = R[0].reshape((1, length))[0]
+                    newA = act.reshape((1,length))[0]
+                    target_R = int(len(newR) - len(newR)*t_R/100) #used length of W to get number of neurons
+                    target_A = int(len(newA) - len(newA)*t_A/100)
+                    threshold_R = np.partition(newR, target_R)[target_R]
+                    threshold_A = np.partition(newA, target_A)[target_A]
+                    top_RN = np.where(newR >= threshold_R)
+                    top_AN = np.where(newA >= threshold_A)
+                    S = np.intersect1d(top_RN, top_AN)
+                    sum_R = sum(newR)
+                    if reset == 1:
+                        new_R = [0] * len(newR)
+                        sum_S = sum(newR[S])
+                        for index in S:
+                            # print("here")
+                            # print((R[0][index]/sum_S) * sum_R)
+                            new_R[index] = (newR[index]/sum_S) * sum_R
+                            # print(index, new_R[index])
+                        # print(new_R)
+                        new_R = np.array(new_R)
+                        R[0] = new_R.reshape(shape)
+                    elif reset == 2:
+                        new_R = [0] * len(newR)
+                        for index in S:
+                            new_R[index] = sum_R/len(S)
+                        new_R = np.array(new_R)
+                        R[0] = new_R.reshape(shape)
+                    elif reset == 3:
+                        new_R = [0] * len(newR)
+                        for index in S:
+                            new_R[index] = newR[index] 
+                        new_R = np.array(new_R)
+                        R[0] = new_R.reshape(shape)
+                    else:
+                        print("Invalid argument, reset can only have values as 0, 1 or 2")
+                    # print("act---", act)
+                    # print("R[0]------", R[0])
 
-                top_RN = np.where(R[0] >= threshold_R)
 
-                top_AN = np.where(act >= threshold_A)
+                    
 
-                S = np.intersect1d(top_RN, top_AN)
-                # print("S", S)
-                # print("common Indices", commonIndices)
-                sum_R = sum(R[0])
-                # print(sum_R)
-                if reset == 1:
-                    new_R = [0] * len(R[0])
-                    sum_S = sum(R[0][S])
-                    for index in S:
-                        # print("here")
-                        # print((R[0][index]/sum_S) * sum_R)
-                        new_R[index] = (R[0][index]/sum_S) * sum_R
-                        # print(index, new_R[index])
-                    # print(new_R)
-                    R[0] = np.array(new_R)
-                elif reset == 2:
-                    new_R = [0] * len(R[0])
-                    for index in S:
-                        new_R[index] = sum_R/len(S)
-                    R[0] = np.array(new_R)
-                elif reset == 3:
-                    new_R = [0] * len(R[0])
-                    for index in S:
-                        new_R[index] = R[0][index] 
-                    R[0] = np.array(new_R)
                 else:
-                    print("Invalid argument, reset can only have values as 0, 1 or 2")
+                    # threshold_R = max(R[0]) - ( (max(R[0])-min(R[0])) * tp_R/100 )
+                    # threshold_A = max(newW) - ( (max(newW)-min(newW)) * tp_A/100 )
+                    target_R = int(len(self.W) - len(self.W)*t_R/100) #used length of W to get number of neurons
+                    target_A = int(len(self.W) - len(self.W)*t_A/100)
+                    threshold_R = np.partition(R[0], target_R)[target_R]
+                    threshold_A = np.partition(act, target_A)[target_A]
+                    # print("threshold R", threshold_R)
+                    # print("threshold A", threshold_A)
+
+                    top_RN = np.where(R[0] >= threshold_R)
+
+                    top_AN = np.where(act >= threshold_A)
+
+                    S = np.intersect1d(top_RN, top_AN)
+                    # print("S", S)
+                    # print("common Indices", commonIndices)
+                    sum_R = sum(R[0])
+                    # print(sum_R)
+                    if reset == 1:
+                        new_R = [0] * len(R[0])
+                        sum_S = sum(R[0][S])
+                        for index in S:
+                            # print("here")
+                            # print((R[0][index]/sum_S) * sum_R)
+                            new_R[index] = (R[0][index]/sum_S) * sum_R
+                            # print(index, new_R[index])
+                        # print(new_R)
+                        R[0] = np.array(new_R)
+                    elif reset == 2:
+                        new_R = [0] * len(R[0])
+                        for index in S:
+                            new_R[index] = sum_R/len(S)
+                        R[0] = np.array(new_R)
+                    elif reset == 3:
+                        new_R = [0] * len(R[0])
+                        for index in S:
+                            new_R[index] = R[0][index] 
+                        R[0] = np.array(new_R)
+                    else:
+                        print("Invalid argument, reset can only have values as 0, 1 or 2")
         except:
             pass
 
