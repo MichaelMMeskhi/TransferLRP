@@ -25,7 +25,7 @@
 			<div class="row">
 
 
-				<div class="col-md-3" style="margin-top:50px">
+				<div class="col-md-3 col-md-offset-1" style="margin-top:50px">
 	                <div class="row">
 	                	<div class="col-md-10">
 	                		<label for="model">Model:</label>
@@ -50,7 +50,7 @@
 	                	</div>
 	                </div>
 
-	                <div class="row" style="margin-top:20px">
+	                <!-- <div class="row" style="margin-top:20px">
 	                	<div class="col-md-10">
 	                		<label for="method">Method:</label>
                           <select class="form-control" id="method">
@@ -74,14 +74,14 @@
 	                		<label for="overlapthreshold">Overlap-Threshold:</label>
                           	<input type="number" class="form-control" id="overlapthreshold" value=10>
 	                	</div>
-	                </div>
+	                </div> -->
 	            </div>
 
 
-				<div class="col-md-3" style="margin-top:35px">
+				<div class="col-md-2" style="margin-top:35px">
 					<h4 style="">Draw</h4>
 					<div id="canvas-div">
-	                    <canvas id="canvas" width="250" height="250"></canvas>
+	                    <canvas id="canvas" width="168" height="168"></canvas>
 	                </div>
 	                <div class="row">
 	                	<div class="col-md-12">
@@ -92,14 +92,26 @@
 	            </div>
 
 	            <div class="col-md-6" style="margin-top: 35px;">
-	            	<div class="col-md-4 col-md-offset-2">
+	            	<div class="col-md-4">
                         <h4>Result</h4>
                     <div class="image-pane" id="lrp-results">
-                        <img height="250" width="450" style=" border: 1px solid;" id="lrpimg" src="/images/lrpresult.png">
+                        <img height="200" width="400" style=" border: 1px solid;" id="lrpimg" src="/images/lrpresult.png">
                     </div>
                 </div>
 	            </div>
 			</div>
+
+
+		<div class="row" style="margin-top:50px;padding-left:32px">
+			<div class="col-md-5 col-md-offset-6" >
+				<div class="col-md-12" style="background-color: rgb(180, 180, 180); color:white; width:400px">
+					<p style="margin-top:10px">Prediction: <label id="predictionLabel"></label> , Second Prediction: <label id="2predictionLabel"></label></p>
+				</div>
+				
+			</div>
+
+		</div>
+
 
 		</div>
 		

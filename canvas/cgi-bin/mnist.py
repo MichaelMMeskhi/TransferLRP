@@ -13,8 +13,9 @@ import re
 import base64
 import numpy as np
 from PIL import Image
-sys.path.append('/Users/michaelmmeskhi/Documents/Github/TransferLRP/python/')
+sys.path.append('/Users/michaelmmeskhi/Desktop/TEX/python/')
 import lrpfinal
+import math
 
 # Default output
 res = {"result": 0,
@@ -42,6 +43,7 @@ try:
         image_bytes = io.BytesIO(base64.b64decode(img_str))
         im = Image.open(image_bytes)
         im = im.resize((28,28), Image.ANTIALIAS)
+        im.save("/Users/michaelmmeskhi/Desktop/TEX/canvas/images/input.png")
         arr = np.array(im)[:,:,0:1]
 
         # Normalize and invert pixel values
@@ -49,11 +51,29 @@ try:
 
         # Predict class
         predictions = lrpfinal.run_demo(arr, model, lrp, method, methodT, overlapT)
+        top = [float(num) for num in predictions]
+        pred = max(top)
+        # ind = []
+        # predictions = list(predictions)
+        # for x in top:
+        #   ind.append(predictions.index(x))
+        letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+        top = list(top)
+        secondMax = -math.inf
+        for x in top:
+            if x<pred and x > secondMax:
+                secondMax = x
+        ind = top.index(pred)
+        ind2 = top.index(secondMax)
+
+        if len(predictions) == 26:
+            ind = letters[ind]
+            ind2 = letters[ind2]
 
         # Return label data
         res['result'] = 1
-        res['indices'] = sorted([int(idx) for idx in np.argpartition(predictions, -5)[-5:]])
-        res['data'] = [float(num) for num in predictions[:5]] 
+        res['indices'] = [ind, ind2]
+        res['data'] = top
 
 except Exception as e:
     # Return error data

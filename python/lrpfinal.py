@@ -34,7 +34,7 @@ def run_demo(x, model, lrp_type, r_approach, reset_threshold, overlap_threshold)
         x = np.array([x])
         x = np.pad(x, ((0,0), (2,2), (2,2), (0,0)), 'constant', constant_values=(-1.,))
         print("shape", x.shape)
-        nn = model_io.read('/Users/michaelmmeskhi/Documents/Github/TransferLRP/models/Mnist_EMnist_cnn', fmt="pickled")
+        nn = model_io.read('/Users/michaelmmeskhi/Desktop/TEX/models/Mnist_EMnist_cnn', fmt="pickled")
         nn.modules[6].name = "lbf"
         # X = data_io.read('../data/EMNIST/Emnist_test_images.npy')
         # Y = data_io.read('../data/EMNIST/Emnist_test_labels.npy')
@@ -48,7 +48,7 @@ def run_demo(x, model, lrp_type, r_approach, reset_threshold, overlap_threshold)
         # Y[np.arange(Y.shape[0]),I] = 1
     elif model == 'EMNIST_nn':
         x = x.reshape((1, 28, 28))
-        nn = model_io.read('/Users/michaelmmeskhi/Documents/Github/TransferLRP/models/Mnist_Emnist_nn', fmt="pickled")
+        nn = model_io.read('/Users/michaelmmeskhi/Desktop/TEX/models/Mnist_Emnist_nn', fmt="pickled")
         nn.modules[7].name = "lbf"
         # X = data_io.read('../data/EMNIST/Emnist_test_images.npy')
         # Y = data_io.read('../data/EMNIST/Emnist_test_labels.npy')
@@ -61,7 +61,7 @@ def run_demo(x, model, lrp_type, r_approach, reset_threshold, overlap_threshold)
         x = x.reshape((28, 28, 1))
         x = np.array([x])
         x = np.pad(x, ((0,0), (2,2), (2,2), (0,0)), 'constant', constant_values=(-1.,))
-        nn = model_io.read('/Users/michaelmmeskhi/Documents/Github/TransferLRP/models/Emnist_Mnist_cnn', fmt="pickled")
+        nn = model_io.read('/Users/michaelmmeskhi/Desktop/TEX/models/Emnist_Mnist_cnn', fmt="pickled")
         nn.modules[6].name = "lbf"
         # X = data_io.read('../data/MNIST/test_images.npy')
         # Y = data_io.read('../data/MNIST/test_labels.npy')
@@ -73,7 +73,7 @@ def run_demo(x, model, lrp_type, r_approach, reset_threshold, overlap_threshold)
         # Y[np.arange(Y.shape[0]),I] = 1
     elif model=="MNIST_nn":
         x = x.reshape((1, 28, 28))
-        nn = model_io.read('/Users/michaelmmeskhi/Documents/Github/TransferLRP/models/Emnist_Mnist_nn', fmt="pickled")
+        nn = model_io.read('/Users/michaelmmeskhi/Desktop/TEX/models/Emnist_Mnist_nn', fmt="pickled")
         nn.modules[7].name = "lbf"
         # X = data_io.read('../data/MNIST/test_images.npy')
         # Y = data_io.read('../data/MNIST/test_labels.npy')
@@ -155,11 +155,11 @@ def run_demo(x, model, lrp_type, r_approach, reset_threshold, overlap_threshold)
         image1[index[0]][index[1]][1] = 1.
         image1[index[0]][index[1]][2] = 0.
 
-    for index in common_red_cord:
         image2[index[0]][index[1]][0] = 0.
         image2[index[0]][index[1]][1] = 0.
         image2[index[0]][index[1]][2] = 0.
 
+    for index in common_red_cord:
         image1[index[0]][index[1]][0] = 1.
         image1[index[0]][index[1]][1] = 0.
         image1[index[0]][index[1]][2] = 0.
